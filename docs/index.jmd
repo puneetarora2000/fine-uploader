@@ -12,39 +12,50 @@ for help on upgrading from a 4.x version."""
 
 Welcome to Fine Uploader's documentation. This documentation is divided into
 different parts. It's recommended that you first check out the
-[quickstart](quickstart/01-getting-started.html) for Fine Uploader. If you’d rather dive into the
+[Getting Started](quickstart/01-getting-started.html) guide for Fine Uploader. If you’d rather dive into the
 internals of Fine Uploader, check out the exhaustive
 Features reference or API documentation (see the navigation menu bar at the top).
 For assistance in getting your upload server set up, check out the docs in
 the Servers section (also available via the navigation menu).
 
-## Getting Started
+## [Getting Started](quickstart/01-getting-started.html)
 
-This area of the documentation is mostly prose and examples. It is meant to be
-human-readable and accessible to those looking to get started with Fine Uploader.
-For experts, or developers looking to view more technical documentation, refer
-to the API documentation section.
+### Client-side
 
-### Quick-start
+1. [Obtaining Fine Uploader](quickstart/01-getting-started.html#obtaining-fine-uploader)
+1. [Client Setup](quickstart/01-getting-started.html#essential-client-setup)
 
-#### Traditional / Generic Endpoint Uploader
+### Server-side
 
-1. [Getting Started with Fine Uploader](quickstart/01-getting-started.html)
-2. [Setting Fine Uploader options](quickstart/02-setting_options.html)
-3. [Creating an upload server](quickstart/03-setting_up_server.html)
+- [Traditional Endpoint](endpoint_handlers/traditional.html)
 
-#### Amazon S3 Uploader
+<!--
+For when you plan to upload directly to your own server that you've
+implemented.
 
-1. [Getting Started with Fine Uploader](quickstart/01-getting-started.html)
-2. [Setting Fine Uploader options](quickstart/02-setting_options-s3.html)
-3. [Creating an upload server](quickstart/03-setting_up_server-s3.html)
+* [Client](quickstart/03-setting_options.html)
+* [Server](quickstart/02-setting_up_server.html)
+-->
 
-#### Azure Blob Storage Uploader
+- [Amazon S3 Endpoint](endpoint_handlers/amazon-s3.html)
 
-1. [Getting Started with Fine Uploader](quickstart/01-getting-started.html)
-2. [Setting Fine Uploader options](quickstart/02-setting_options-azure.html)
-3. [Creating an upload server](quickstart/03-setting_up_server-azure.html)
+<!--
+For when you would like to upload directly an S3-compatible endpoint.
 
+* [Client](quickstart/03-setting_options-s3.html)
+* [Server](quickstart/02-setting_up_server-s3.html)
+-->
+
+- [Azure Blob Storage Endpoint](endpoint_handlers/azure.html)
+
+<!--
+For when you would like to upload directory to Microsoft Azure's Blob Storage.
+
+* [Client](quickstart/03-setting_options-azure.html)
+* [Server](quickstart/02-setting_up_server-azure.html)
+-->
+
+<hr/>
 
 ### Fine Uploader Modes
 
