@@ -4,109 +4,347 @@
 {% markdown %}
 # Getting Started with Fine Uploader {: .page-header }
 
-This tutorial will serve as a step-by-step walkthrough for getting starting with
-Fine Uploader. It is geared towards those who have minimal experience with
-Javascript, server-side concepts, or the web.
+1. [Obtaining Fine Uploader](#obtaining-fine-uploader)
+    1. [Via the Downloads Page](#via-the-downloads-page)
+    1. [Via npm](#via-npm)
+    1. [Via git](#build-your-own-via-github)
+1. [Essential Client Setup](#essential-client-setup)
+    1. [Include Static Javascript and CSS Files](#include-static-javascript-and-css-files)
+    1. [Add HTML Template to Page](#add-html-template-to-page)
+    1. [Create a Fine Uploader Instance](#create-fine-uploader-instance)
+    1. [Setting Options](#setting-options)
+    1. [Handling Events](#handling-events)
+1. [Configuring an Upload Server](#configuring-an-upload-server)
+1. [Going Further](#going-further)
 
-The tutorial is not comprehensive or meant to cover all aspects of Fine Uploader.
-For more information, make sure to read through the list of features as well
-as the API documentation.
+---
 
-### 1. Download
+This tutorial will serve as a step-by-step walk-through for getting starting with
+Fine Uploader for the first time.At the end of this guide you will have created
+a page with Fine Uploader that uses the latest gallery view template, and a simple PHP web application that
+can handle file uploads.
+
+Requirements for this guide:
+
+- Basic knowledge of HTML, CSS, and Javascript
+- PHP 5.2+ (if you would like to use the example upload server)
+
+{{ alert(
+"""The tutorial is not comprehensive or meant to cover all aspects of Fine Uploader.""",
+"info") }}
+
+### Obtaining Fine Uploader
+
+All official downloads come bundled with all required javascript files, stylesheets,
+images, and templates needed for Fine Uploader to function in a browser.
+
+#### Via the [Downloads Page](http://fineuploader.com/downloads.html)
 
 You can get Fine Uploader in the [downloads](http://fineuploader.com/downloads.html)
-section. The download comes bundled with all required scripts and modules.
+section of our website.
 
-### 2. Decide which Fine Uploader to use
+#### Via [npm](https://www.npmjs.com/package/fine-uploader)
 
-#### Modes
-Fine Uploader comes with two different modes pertaining to the user interface.
-
-##### [Core Mode](../modes/core.html)
-The most basic Fine Uploader mode.  Core mode assumes that the developer will code their own UI
-but still make use of Fine Uploader's API. Core mode is suggested for advanced developers
-who wish to heavily customize the uploader's user interface. To use Core Mode:
-
-```javascript
-var uploader = new qq.FineUploaderBasic({/* options go here .... */});
+```sh
+npm install fine-uploader
 ```
 
-##### [UI Mode](../modes/ui.html)
-Inherits everything from Core mode. UI mode also comes with a fully functional
-user interface which includes, but is not limited to: a default upload button,
-progress bars, retry/cancel/delete buttons, proper display of error messages,
-and more. UI mode is recommended for beginning developers or for those who
-are pleased with the default Fine Uploader interface or can customize the default Fine Uploader
-UI via CSS. To use UI Mode:
+#### Build Your Own Via [GitHub](https://github.com/FineUploader/fine-uploader)
 
-```javascript
-var uploader = new qq.FineUploader({/* options go here ... */});
+{{ alert(
+"""For advanced users only.""",
+"error") }}
+
+```sh
+git clone https://github.com/FineUploader/fine-uploader.git
+```
+
+### Essential Client Setup
+
+The following steps are _required_ for Fine
+Uploader to instantiate properly on a page.
+
+As with the [demos](http://fineuploader.com/demos) all of the examples here
+will reference `fine-uploader.js` which is for *traditional endpoints*. If you
+are planning on using S3 or Azure as a backend then replace `fine-uploader.js`
+with `s3.fine-uploader.js` or `azure.fine-uploader.js`. If you are planning on
+using the jQuery plugin then use `s3.jquery.fine-uploader.js` or
+`azure.jquery.fine-uploader.js` instead.
+
+{{ alert(
+"""Another way to quickly get started with client-side code is to use the sample
+code from the [demos](http://fineuploader.com/demos), and tweak that as you like.""",
+"info") }}
+
+#### Include Static Javascript and CSS Files
+
+Once you have obtained Fine Uploader you must reference it your HTML.
+Create an HTML file reference `fine-uploader.js` somewhere within
+the `<head>` tags.
+
+Since we are using Fine Uploader in UI mode, we also include the latest gallery
+view template style sheet, `fine-uploader-new.css`, which is included in the zip you downloaded.
+When combined with the proper [template](../features/styling.html#templates) this stylesheet
+will help us get started with a good-looking UI much faster than by hand.
+
+The following code snippet is an example of what your initial page should
+resemble:
+
+```html
+<html>
+    <head>
+
+        <!-- Fine Uploader CSS file (*required* if using UI mode!)
+        ====================================================================== -->
+        <link href="node_modules/fine-uploader-new.css" rel="stylesheet">
+
+    </head>
+    <body>
+
+        <!-- Fine Uploader JS file (always required!)
+        ====================================================================== -->
+        <script src="node_modules/fine-uploader.js"></script>
+
+    </body>
+</html>
+```
+
+#### Add HTML Template to Page
+
+{{ alert(
+"""***This part is not required if you are using Fine Uploader in Core Mode!***""",
+"info") }}
+
+Fine Uploader uses an HTML template to guide its layout and functionality when in UI mode. More details are in the
+[Styling feature's page](../features/styling.html#templates).
+
+Copy and paste the template below somewhere into your HTML page:
+
+```html
+ <!-- Fine Uploader template (not required unless using UI mode)
+====================================================================== -->
+ <script type="text/template" id="qq-template">
+    <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
+        <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
+            <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
+        </div>
+        <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
+            <span class="qq-upload-drop-area-text-selector"></span>
+        </div>
+        <div class="qq-upload-button-selector qq-upload-button">
+            <div>Upload a file</div>
+        </div>
+            <span class="qq-drop-processing-selector qq-drop-processing">
+                <span>Processing dropped files...</span>
+                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+            </span>
+        <ul class="qq-upload-list-selector qq-upload-list" aria-live="polite" aria-relevant="additions removals">
+            <li>
+                <div class="qq-progress-bar-container-selector">
+                    <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-progress-bar-selector qq-progress-bar"></div>
+                </div>
+                <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
+                <span class="qq-upload-file-selector qq-upload-file"></span>
+                <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
+                <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+                <span class="qq-upload-size-selector qq-upload-size"></span>
+                <button type="button" class="qq-btn qq-upload-cancel-selector qq-upload-cancel">Cancel</button>
+                <button type="button" class="qq-btn qq-upload-retry-selector qq-upload-retry">Retry</button>
+                <button type="button" class="qq-btn qq-upload-delete-selector qq-upload-delete">Delete</button>
+                <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
+            </li>
+        </ul>
+
+        <dialog class="qq-alert-dialog-selector">
+            <div class="qq-dialog-message-selector"></div>
+            <div class="qq-dialog-buttons">
+                <button type="button" class="qq-cancel-button-selector">Close</button>
+            </div>
+        </dialog>
+
+        <dialog class="qq-confirm-dialog-selector">
+            <div class="qq-dialog-message-selector"></div>
+            <div class="qq-dialog-buttons">
+                <button type="button" class="qq-cancel-button-selector">No</button>
+                <button type="button" class="qq-ok-button-selector">Yes</button>
+            </div>
+        </dialog>
+
+        <dialog class="qq-prompt-dialog-selector">
+            <div class="qq-dialog-message-selector"></div>
+            <input type="text">
+            <div class="qq-dialog-buttons">
+                <button type="button" class="qq-cancel-button-selector">Cancel</button>
+                <button type="button" class="qq-ok-button-selector">Ok</button>
+            </div>
+        </dialog>
+    </div>
+</script>
 ```
 
 {{ alert(
-"""If you are using Fine Uploader UI, you MUST include a template in your document/markup.  You can
-use the `default.html` file in the `templates` directory bundled with the library and customize it as desired.  See the
-[styling documentation page](../features/styling.html) for more details.""") }}
+"""Some pre-made templates are available for you to use in the distributed
+sources. You can also browse them in the [GitHub repo](https://github.com/FineUploader/fine-uploader/blob/master/client/html/templates)"""
+, info) }}
 
+#### Create Fine Uploader Instance
 
-#### Endpoint Handlers
+This element will be where our rendered Fine Uploader instance binds to.
+Include the following `div` element somewhere inside of your `<body></body>` tags:
 
-##### [Traditional](../endpoint_handlers/traditional.html)
-To use the traditional endpoint handler, simply declare Fine Uploader as you
-normally would.
-
-##### [Amazon S3](../endpoint_handlers/amazon-s3.html)
-Amazon's S3 is currently the most popular cloud service.
-Fine Uploader comes with built in support that allows all files to be uploaded directly to S3 via the browser.
-To make use of Fine Uploader S3:
-
-```javascript
-var uploader = new qq.s3.FineUploader({/* options go here ... */});
+```html
+<div id="fine-uploader"></div>
 ```
 
-##### [Azure Blob Storage](../endpoint_handlers/azure.html)
-Fine Uploader comes with built in support that allows all files to be uploaded directly to Azure via the browser.
-To make use of Fine Uploader Azure:
+Next, create a `<script>` tag to contain our Javascript for creating a new
+Fine Uploader instance:
+
+```html
+<script>
+    var options = {
+            element: document.getElementById('fine-uploader')
+        },
+        uploader = new qq.FineUploader(options);
+</script>
+```
+
+#### Setting Options
+
+Maybe you noticed above that we passed an object called `options` into
+Fine Uploader's constructor.
+
+Fine Uploader has [core options](../api/options.html) that apply to every mode and server,
+[UI options](../api/options-ui.html), [S3 options](../api/options-s3), and [Azure options](../api/options-azure.html).
+
+*All* uploader's require `element` to be defined in their options. We can also
+add more options and pass them into the constructor of Fine Uploader like so:
 
 ```javascript
-var uploader = new qq.azure.FineUploader({/* options go here ... */});
+var options = {
+        element: document.getElementById('fine-uploader'),
+        retry: {
+            enableAuto: true
+        }
+    },
+    uploader = new qq.FineUploader(options);
 ```
-{{ alert("Fine Uploader Azure does not support IE9 and older.  This is due to the fact that Azure's API does
-not allow files to be uploaded via multipart encoded POST requests, which is critical for IE9 and older support.
-If you need to support IE9 and older, you will need to load/use Fine Uploader with its traditional endpoint
-handler if the value of `qq.supportedFeatures.ajaxUploading` is `false`.") }}
 
+The above code will create a new Fine Uploader instance with file deletion
+enabled.
 
-#### Callbacks
-Like many other JavaScript libraries, Fine Uploader implements a event system
-that uses callbacks to execute user-provided functions at runtime, based on
-specific events. These [events are listed here](../api/events.html).
+#### API Methods
 
-Callbacks are defined in the `callbacks` option
+Fine Uploader exposes much of its functionality via [public API methods](../api/methods.html).
+These methods can be use to modify [core](../api/methods.html#core), [ui](../api/methods.html#ui), [S3](../api/methods-s3.html), and [Azure](../api/methods-azure.html)
+uploader modes.
+
+For example, we could make the entire `document` a dropzone so when our users
+drag and drop a file onto the window it will automatically begin to upload.
+We can use the [`addExtraDropzone`](../api/methods.html#addExtraDropzone)
+method to do this like so:
+
+```javascript
+var options = {
+        element: document.getElementById('fine-uploader'),
+        retry: {
+            enableAuto: true
+        }
+    },
+    uploader = new qq.FineUploader(options);
+
+    uploader.addExtraDropZone(document);
+```
+
+#### Handling Events
+
+Like many other Javascript libraries Fine Uploader implements an event system
+that uses callbacks to execute user-provided functions when specific
+events happen.
+These events can be found in the [events documentation](../api/events.html).
+
+Callbacks for events are defined in the `callbacks` option
 property. The parameters for the callbacks are the same as listed in the
 [documentation](../api/events.html).
 
-**Example:**
+Let's modify our original code to include an "`allComplete`"callback handler.
+This handler will fire when all the uploads are completed:
 
 ```javascript
-var uploader = new qq.FineUploader({
-    // options
-    callbacks: {
-        onUpload: function (id, name) {
+var options = {
+        element: document.getElementById('fine-uploader'),
+        retry: {
+            enableAuto: true
         },
-        onSubmitted: function (id, name) {
+        callbacks: {
+            onAllComplete: function (succeeded, failed) {
+                alert(succeeded.length + " uploads completed!" failed.length + " failed");
+            }
         }
-    }
+    },
+    uploader = new qq.FineUploader(options);
+
+    uploader.addExtraDropZone(document);
 });
 ```
 
-Next, let's check out some of Fine Uploader's options.
+### Configuring an Upload Server
 
-Proceed by selecting either:
+This next section will cover how to
+set up a server to host your code, your static assets, and handle uploads.
+This is arguably the hardest part of using Fine Uploader since file uploads
+can be a complex and non-trivial task depending on the use case.
 
-* [Traditional endpoint](02-setting_options.html)
-* [Amazon S3 endpoint](02-setting_options-s3.html)
-* [Azure Blob Storage endpoint](02-setting_options-azure.html)
+To make our initial implementation easier, we'll use one of the pre-existing
+PHP examples. Navigate to [Fine Uploader's traditional PHP example](https://github.com/FineUploader/server-examples/tree/master/php/traditional)
+and acquire all the code (except `li3`).
+
+Next, in the same directory as the HTML page with Fine Uploader on it, run the
+PHP server with the following command (substitute the port -- 9090 -- with
+anything you'd like):
+
+`php -S 0.0.0.0:9090 -t .`
+
+Now you should be able to navigate to `localhost:9090` in your browser where
+you will see an upload button which you can use to upload some files!
+
+{{ alert(
+"""
+Advanced users can also use one of the community-contributed
+upload servers found in the [fineuploader/server-examples](https://github.com/FineUploader/server-examples) repository.
+Please note that these servers are examples only, and it is not suggested to
+rely on them in a customer-facing or production setting.
+""", "warn", "For Advanced Users") }}
+
+### Going Further
+
+If you would like to go further with Fine Uploader, please see the extensive
+list of [options](../api/options.html), [methods](../api/methods.html), and [events](../api/events.html) that it comes with.
+
+Also check out the server notes for [traditional](../endpoint_handlers/traditional.html), [S3](../endpoint_handlers/amazon-s3.html), and [Azure](../endpoint_handlers/azure.html) if
+you would like to use a different back-end.
+
+If you would like to go even further with your server setup, proceed by selecting your intended server type:
+
+#### [Traditional endpoint](../endpoint_handlers/traditional.html)
+
+If you plan to upload directly to your own server
+
+##### [Traditional Client Guide](02-setting_options.html)
+##### [Traditional Server Guide](03-setting_up_server.html)
+
+#### [Amazon S3 endpoint](../endpoint_handlers/amazon-s3.html)
+
+If you would like to upload directly an S3-compatible endpoint.
+
+##### [Amazon S3 Client Guide](02-setting_options-s3.html)
+##### [Amazon S3 Server Guide](03-setting_up_server-s3.html)
+
+#### [Azure Blob Storage endpoint](../endpoint_handlers/azure.html)
+
+If you would like to upload to Azure's Blob Storage.
+
+##### [Azure Client Guide](02-setting_options-azure.html)
+##### [Azure Server Guide](03-setting_up_server-azure.html)
 
 {% endmarkdown %}
 {% endblock %}
