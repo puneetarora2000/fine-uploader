@@ -3,6 +3,10 @@
 
 {% block content %}
 {% markdown %}
+
+# TODO
+
+<!--
 # Server Set-Up <small>Amazon S3</small> {: .page-header}
 
 For this tutorial we are going to use [Node.js](http://nodejs.org/) to develop
@@ -41,5 +45,6 @@ Fire up the HTML page with the client-side uploader code on it, and attempt to
 upload.
 
 Booyakosha! You are on the fast-track to upload nirvana. Continue forth in your quest to learn to integrate Fine Uploader with your application by reviewing the rest of the [documentation](../)
+-->
 {% endmarkdown %}
 {% endblock %}
